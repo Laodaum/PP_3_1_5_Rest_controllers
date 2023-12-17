@@ -1,23 +1,23 @@
 <!DOCTYPE html>
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:th="https://www.thymeleaf.org" xmlns:sec="https://www.thymeleaf.org/thymeleaf-extras-springsecurity3">
-
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en"
+      xmlns:th="http://thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>User's page</title>
+    <title>admin</title>
     <style>
         table {
-            width: 100%;
-            border-collapse: collapse;
+         width: 100%;
+         border-collapse: collapse;
         }
         thead {
-            background: #f5e8d0;
+         background: #f5e8d0;
         }
         td {
-            padding: 5px;
-            border: 1px solid #333;
+         padding: 5px;
+         border: 1px solid #333;
         }
         tbody tr:nth-child(even) {
-            background: #f0f0f0;
+         background: #f0f0f0;
         }
     </style>
 </head>
@@ -28,7 +28,6 @@
     <input type="submit" value="LOGOUT" />
 </form>
 <br/>
-<form th:method = "GET" th:object="${user}">
 <table>
     <thead>
     <tr>
@@ -36,17 +35,27 @@
         <th>First Name</th>
         <th>Last Name</th>
         <th>Email</th>
-
+        <th>Delete user</th>
+        <th>Change user`s data</th>
     </tr>
     </thead>
     <tbody>
+    <tr th:each="user : ${allUsers}">
         <td th:text="${user.id}"></td>
         <td th:text="${user.firstName}"></td>
         <td th:text="${user.lastName}"></td>
         <td th:text="${user.email}"></td>
+        <td> <a th:href="@{/admin/delete?id={id}(id=${user.id})}" th:text ="Delete"></a>
+        <td> <a th:href="@{/admin/change?id={id}(id=${user.id})}" th:text ="Change"></a>
         </td>
+    </tr>
     </tbody>
 </table>
+<br/>
+<form  th:method = "GET" th:action="@{/admin/new}">
+    <input type="submit" value="Add user" />
 </form>
+<br/>
+
 </body>
 </html>
