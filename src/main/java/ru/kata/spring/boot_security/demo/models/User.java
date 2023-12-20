@@ -10,14 +10,14 @@ import java.util.HashSet;
 import java.util.Set;
 
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 public class User implements UserDetails {
 
    @Id
    @GeneratedValue(strategy = GenerationType.IDENTITY)
    private Long id;
 
-   @Column(name = "name")
+   @Column(name = "first_name")
    private String firstName;
 
    @Column(name = "last_name")
@@ -28,15 +28,10 @@ public class User implements UserDetails {
 
    @Column(name = "password",nullable = false)
    private String password;
-   @Column(name = "login",nullable = false,unique = true)
+   @Column(name = "login", nullable = false, unique = true)
    private String login;
 
    @ManyToMany(cascade = CascadeType.ALL)
-   @JoinTable(
-           name = "user_role",
-           joinColumns = @JoinColumn(name = "user_id"),
-           inverseJoinColumns = @JoinColumn(name = "role_id")
-   )
    private Set<Role> roles = new HashSet<>();
 
    public User() {}
@@ -96,6 +91,17 @@ public class User implements UserDetails {
       this.login = login;
    }
 
+   public Set<Role> getRoles() {
+      return roles;
+   }
+   public void setRoles(Set<Role> roles) {
+      this.roles = roles;
+   }
+
+   public void setRoles(Role role) {
+      this.roles.add(role);
+   }
+
    @Override
    public String toString() {
       return "User{" +
@@ -108,10 +114,8 @@ public class User implements UserDetails {
 
    @Override
    public Collection<? extends GrantedAuthority> getAuthorities() {
-      System.out.println(roles);
       return roles;
    }
-
 
    @Override
    public String getUsername() {

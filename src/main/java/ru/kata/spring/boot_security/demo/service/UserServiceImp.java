@@ -2,15 +2,14 @@ package ru.kata.spring.boot_security.demo.service;
 
 import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.dao.UserDao;
+import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
-import java.util.List;
-
-import static ru.kata.spring.boot_security.demo.configs.WebSecurityConfig.passwordEncoder;
+import javax.annotation.PostConstruct;
+import java.util.Set;
 
 @Service
 public class UserServiceImp implements UserService {
@@ -30,13 +29,16 @@ public class UserServiceImp implements UserService {
    @Transactional
    @Override
    public void add(User user) {
-      user.setPassword(passwordEncoder.encode(user.getPassword()));
-      userDao.add(user);
+      //if (userDao.findUserByLogin(user.getLogin()) == null) {
+        // roleService.findRole();
+         user.setPassword(passwordEncoder.encode(user.getPassword()));
+         userDao.add(user);
+     // }
    }
 
    @Transactional(readOnly = true)
    @Override
-   public List<User> listUsers() {
+   public Set<User> listUsers() {
       return userDao.listUsers();
 
    }
@@ -56,5 +58,21 @@ public class UserServiceImp implements UserService {
       userDao.update(changedUser);
    }
 
+   @Transactional
+   @Override
+   public void addFirstAdmin() {
+      if (userDao.ifDBEmpty()) {
+      User admin = new User("admin","adminsky","admin@mail.ru");
+      admin.setPassword(passwordEncoder.encode("123"));
+      admin.setLogin("admin");
+      admin.setRoles(new Role("admin"));
+      userDao.add(admin);
 
+      User user = new User("user","usersky","user@mail.ru");
+      user.setPassword(passwordEncoder.encode("123"));
+      user.setLogin("user");
+      user.setRoles(new Role("user"));
+      userDao.add(user);
+      }
+   }
 }

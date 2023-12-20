@@ -3,7 +3,9 @@ package ru.kata.spring.boot_security.demo.models;
 import org.springframework.security.core.GrantedAuthority;
 
 import javax.persistence.*;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "role")
@@ -12,18 +14,25 @@ public class Role implements GrantedAuthority {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "role")
+    @Column(name = "role", nullable = false, unique = true)
     private String role;
-
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "user_role",
-            joinColumns = @JoinColumn(name = "role_id"),
-            inverseJoinColumns = @JoinColumn(name = "user_id")
-    )
-    private List<User> usersByRole;
+    @Transient
+    @ManyToMany(mappedBy = "role")
+    private Set<User> usersByRole = new HashSet<>();
 
     public Role() {
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public Role(String role) {
+        this.role = role;
     }
 
     public String getRole() {
@@ -34,16 +43,23 @@ public class Role implements GrantedAuthority {
         this.role = role;
     }
 
-    public List<User> getUsersByRole() {
+    public Set<User> getUsersByRole() {
         return usersByRole;
     }
 
-    public void setUsersByRole(List<User> usersByRole) {
+    public void setUsersByRole(Set<User> usersByRole) {
         this.usersByRole = usersByRole;
+    }
+
+    @Override
+    public String toString() {
+        return role;
     }
 
     @Override
     public String getAuthority() {
         return role;
     }
+
+
 }

@@ -8,10 +8,6 @@
 </head>
 <body>
 <br/>
-<form  th:method = "GET" th:action="@{/logout}">
-        <input type="submit" value="LOGOUT" />
-</form>
-<br/>
 <br/>
 <form th:method = "POST" th:action = "@{/admin/change?id={id}(id=${user.id})}" th:object="${user}">
         <label for="firstName"> Enter first name: </label>
@@ -32,6 +28,15 @@
         <br/>
         <label for="password"> Enter password: </label>
         <input type="text" th:field="*{password}" id="password"/>
+        <br/>
+        <br/>
+        <label for="roleSelect"> Enter role: </label>
+        <select id="roleSelect"  th:field="*{roles}" multiple="multiple">
+                <option th:each="role:${modelRole}"
+                        th:value="${role}"
+                        th:text="${role}">
+                </option>
+        </select>
         <br/>
         <br/>
         <input type="submit" value="Add"/>

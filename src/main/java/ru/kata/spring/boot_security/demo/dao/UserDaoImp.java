@@ -1,16 +1,14 @@
 package ru.kata.spring.boot_security.demo.dao;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import ru.kata.spring.boot_security.demo.models.User;
 import org.springframework.stereotype.Repository;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
-import java.util.List;
-import java.util.Optional;
+import java.util.HashSet;
+import java.util.Set;
 
 @Repository
 public class UserDaoImp implements UserDao {
@@ -19,14 +17,13 @@ public class UserDaoImp implements UserDao {
    private EntityManager entityManager;
 
    @Override
-   public void add(User user) {
-      entityManager.persist(user);
+   public void add(User user) {entityManager.persist(user);
    }
 
    @Override
    @SuppressWarnings(value = "unchecked")
-   public List<User> listUsers() {
-      return entityManager.createQuery( "from User" ).getResultList();
+   public Set<User> listUsers() {
+      return new HashSet<> (entityManager.createQuery( "SELECT u FROM User u LEFT JOIN FETCH u.roles" ).getResultList());
    }
 
    @Override
@@ -50,5 +47,9 @@ public class UserDaoImp implements UserDao {
          System.out.println("User not found!");
          throw new UsernameNotFoundException("User not found!",noResultException);
       }
+   }
+   @Override
+   public boolean ifDBEmpty(){
+      return  entityManager.createQuery("select 1 from User").getResultList().isEmpty();
    }
 }

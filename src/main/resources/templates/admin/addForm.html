@@ -14,6 +14,7 @@
 <br/>
 <br/>
 <form th:method = "POST" th:action = "@{/}" th:object="${user}">
+
         <label for="firstName"> Enter first name: </label>
         <input type="text" th:field="*{firstName}" id="firstName"/>
         <br/>
@@ -32,6 +33,15 @@
         <br/>
         <label for="password"> Enter password: </label>
         <input type="text" th:field="*{password}" id="password"/>
+        <br/>
+        <br/>
+        <label for="roleSelect"> Enter role: </label>
+        <select id="roleSelect"  th:field="*{roles}" multiple="multiple">
+                <option th:each="role:${modelRole}"
+                        th:value="${role}"
+                        th:text="${role}">
+                </option>
+        </select>
         <br/>
         <br/>
         <input type="submit" value="Add"/>
