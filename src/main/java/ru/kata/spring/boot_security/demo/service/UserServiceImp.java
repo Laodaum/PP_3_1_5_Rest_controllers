@@ -7,8 +7,6 @@ import ru.kata.spring.boot_security.demo.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import javax.annotation.PostConstruct;
 import java.util.Set;
 
 @Service
@@ -29,8 +27,6 @@ public class UserServiceImp implements UserService {
    @Transactional
    @Override
    public void add(User user) {
-      //if (userDao.findUserByLogin(user.getLogin()) == null) {
-        // roleService.findRole();
          user.setPassword(passwordEncoder.encode(user.getPassword()));
          userDao.add(user);
      // }
