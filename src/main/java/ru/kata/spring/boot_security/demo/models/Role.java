@@ -1,6 +1,7 @@
 package ru.kata.spring.boot_security.demo.models;
 
 import org.springframework.security.core.GrantedAuthority;
+import ru.kata.spring.boot_security.demo.models.User;
 
 import javax.persistence.*;
 import java.util.HashSet;
@@ -21,6 +22,13 @@ public class Role implements GrantedAuthority {
 
     public Role() {
     }
+    public Role(Long id) {
+        this.id = id;
+    }
+
+    public Role(String role) {
+        this.role = role;
+    }
 
     public Long getId() {
         return id;
@@ -28,10 +36,6 @@ public class Role implements GrantedAuthority {
 
     public void setId(Long id) {
         this.id = id;
-    }
-
-    public Role(String role) {
-        this.role = role;
     }
 
     public String getRole() {
@@ -62,3 +66,4 @@ public class Role implements GrantedAuthority {
 
 
 }
+

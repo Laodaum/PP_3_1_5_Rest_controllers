@@ -13,8 +13,10 @@ public class RoleDaoImpl implements RoleDao{
     @PersistenceContext
     private EntityManager entityManager;
     @Override
-    public Role findRole(String role) {
-        return (Role) entityManager.createQuery("SELECT r FROM Role r  WHERE r.role = :role").setParameter("role", role).getSingleResult();
+    public Role findRole(Long id) {
+        System.out.println(id);
+        return entityManager.find(Role.class, id);
+        // return (Role) entityManager.createQuery("SELECT r FROM Role r  WHERE r.role = :role").setParameter("role", role).getSingleResult();
     }
 
     @Override
@@ -25,5 +27,5 @@ public class RoleDaoImpl implements RoleDao{
     @Override
     public void add(Role role) {
         entityManager.merge(role);
-        }
+    }
 }

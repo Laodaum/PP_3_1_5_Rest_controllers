@@ -5,7 +5,7 @@ import java.util.Set;
 
 public interface RoleDao {
 
-    Role findRole(String role);
+    Role findRole(Long id);
     Set<Role> rolesSet();
     void add(Role role);
 }

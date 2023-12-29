@@ -27,9 +27,9 @@ public class UserServiceImp implements UserService {
    @Transactional
    @Override
    public void add(User user) {
-         user.setPassword(passwordEncoder.encode(user.getPassword()));
-         userDao.add(user);
-     // }
+      user.setPassword(passwordEncoder.encode(user.getPassword()));
+      userDao.add(user);
+      // }
    }
 
    @Transactional(readOnly = true)
@@ -46,11 +46,14 @@ public class UserServiceImp implements UserService {
 
    @Override
    public User findUser(Long id) {
-     return userDao.findUser(id);
+      return userDao.findUser(id);
    }
    @Transactional
    @Override
    public void update(User changedUser) {
+      if (userDao.findUser(changedUser.getId()).getId() != changedUser.getId()) {
+         changedUser.setPassword(passwordEncoder.encode(changedUser.getPassword()));
+      }
       userDao.update(changedUser);
    }
 
@@ -58,17 +61,17 @@ public class UserServiceImp implements UserService {
    @Override
    public void addFirstAdmin() {
       if (userDao.ifDBEmpty()) {
-      User admin = new User("admin","adminsky","admin@mail.ru");
-      admin.setPassword(passwordEncoder.encode("123"));
-      admin.setLogin("admin");
-      admin.setRoles(new Role("admin"));
-      userDao.add(admin);
+         User admin = new User("admin","adminsky","admin@mail.ru");
+         admin.setPassword(passwordEncoder.encode("123"));
+         admin.setLogin("admin");
+         admin.setRoles(new Role("admin"));
+         userDao.add(admin);
 
-      User user = new User("user","usersky","user@mail.ru");
-      user.setPassword(passwordEncoder.encode("123"));
-      user.setLogin("user");
-      user.setRoles(new Role("user"));
-      userDao.add(user);
+         User user = new User("user","usersky","user@mail.ru");
+         user.setPassword(passwordEncoder.encode("123"));
+         user.setLogin("user");
+         user.setRoles(new Role("user"));
+         userDao.add(user);
       }
    }
 }
