@@ -29,8 +29,10 @@ public class User implements UserDetails {
    @Column(name = "login", nullable = false, unique = true)
    private String login;
 
-   @ManyToMany(cascade = CascadeType.ALL)
+   @ManyToMany
+   @JoinTable(name = "user_roles", joinColumns = @JoinColumn(name = "user_id"), inverseJoinColumns = @JoinColumn(name = "roles_id"))
    private Set<Role> roles = new HashSet<>();
+
 
    public User() {}
 
@@ -38,6 +40,15 @@ public class User implements UserDetails {
       this.firstName = firstName;
       this.lastName = lastName;
       this.email = email;
+   }
+
+   public User(String firstName, String lastName, String email, String password, String login, Set<Role> roles) {
+      this.firstName = firstName;
+      this.lastName = lastName;
+      this.email = email;
+      this.password = password;
+      this.login = login;
+      this.roles = roles;
    }
 
    public Long getId() {
@@ -92,11 +103,12 @@ public class User implements UserDetails {
    public Set<Role> getRoles() {
       return roles;
    }
+
    public void setRoles(Set<Role> roles) {
       this.roles = roles;
    }
 
-   public void setRoles(Role role) {
+   public void addRoles(Role role) {
       this.roles.add(role);
    }
 
@@ -139,5 +151,4 @@ public class User implements UserDetails {
    public boolean isEnabled() {
       return true;
    }
-
 }

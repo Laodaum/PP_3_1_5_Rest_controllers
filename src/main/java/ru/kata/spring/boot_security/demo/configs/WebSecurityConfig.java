@@ -29,15 +29,14 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure(HttpSecurity http) throws Exception {
         http
-                //.csrf().disable()
+                .csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/start","/addFirsAdmin","/login")
-                .permitAll()
+                .antMatchers("/login", "/error").permitAll()
                 .and()
                 .authorizeRequests()
-                .antMatchers("/admin","/admin/addForm","/admin/changeForm","/user").hasAuthority("admin")
-                .antMatchers("/user").hasAnyAuthority("user","admin")
-                .anyRequest().authenticated()
+                .antMatchers("/admin","/users","/usersEdit").hasAuthority("admin")
+                .antMatchers("/user_panel","/user").hasAuthority("user")
+                .anyRequest().hasAnyAuthority("user", "admin")
                 .and()
                 .formLogin().successHandler(successUserHandler)
                 .permitAll()
@@ -65,19 +64,4 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
     public static PasswordEncoder noPasswordEncoder() {
         return NoOpPasswordEncoder.getInstance();
     }
-
-
-    // аутентификация inMemory
-//    @Bean
-//    @Override
-//    public static UserDetailsService userDetailsService() {
-//        UserDetails user =
-//                User.withDefaultPasswordEncoder()
-//                        .username("user")
-//                        .password("user")
-//                        .roles("USER")
-//                        .build();
-//
-//        return new InMemoryUserDetailsManager(user);
-//    }
 }

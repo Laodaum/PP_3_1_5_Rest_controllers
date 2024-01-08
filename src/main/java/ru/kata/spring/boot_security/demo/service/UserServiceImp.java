@@ -1,77 +1,93 @@
 package ru.kata.spring.boot_security.demo.service;
 
+import org.springframework.security.core.userdetails.UserDetails;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
-import ru.kata.spring.boot_security.demo.dao.UserDao;
 import ru.kata.spring.boot_security.demo.models.Role;
 import ru.kata.spring.boot_security.demo.models.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import java.util.Set;
+import ru.kata.spring.boot_security.demo.repository.UserRepository;
 
+import java.util.List;
+import java.util.Optional;
+
+import static java.util.Set.of;
 @Service
-public class UserServiceImp implements UserService {
+public class UserServiceImp implements UserService, UserDetailsService {
+    private PasswordEncoder passwordEncoder;
+    private UserRepository userRepository;
 
+    @Autowired
+    public UserServiceImp(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
+    }
 
-   private UserDao userDao;
+    @Transactional
+    @Override
+    public void save(User user) {
+        user.setPassword(encode(user.getPassword()));
+        userRepository.save(user);
+    }
 
-   private PasswordEncoder passwordEncoder;
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
 
+    @Transactional
+    @Override
+    public void deleteById(Long id) {
+        userRepository.deleteById(id);
+    }
 
-   @Autowired
-   public UserServiceImp(UserDao userDao, PasswordEncoder passwordEncoder) {
-      this.userDao = userDao;
-      this.passwordEncoder= passwordEncoder;
-   }
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
 
-   @Transactional
-   @Override
-   public void add(User user) {
-      user.setPassword(passwordEncoder.encode(user.getPassword()));
-      userDao.add(user);
-      // }
-   }
+    @Transactional
+    @Override
+    public void update(User updatedUser) {
+        Optional<User> user = userRepository.findById(updatedUser.getId());
+        if (user.isEmpty()) return;
+        System.out.println(user.get().getPassword().equals(updatedUser.getPassword()));
+        System.out.println(user.get().getPassword());
+        System.out.println(updatedUser.getPassword());
+        if (!user.get().getPassword().equals(updatedUser.getPassword())) {
+            updatedUser.setPassword(encode(updatedUser.getPassword()));
+        }
+        userRepository.save(updatedUser);
 
-   @Transactional(readOnly = true)
-   @Override
-   public Set<User> listUsers() {
-      return userDao.listUsers();
+    }
 
-   }
-   @Transactional
-   @Override
-   public void removeUserById(Long id) {
-      userDao.removeUserById(id);
-   }
+    @Transactional
+    @Override
+    public void addFirstAdmin() {
+        if (userRepository.countUsers().equals(0L)) {
+            userRepository.save(getDefaultUser());
+            userRepository.save(getDefaultAdmin());
+        }
+    }
 
-   @Override
-   public User findUser(Long id) {
-      return userDao.findUser(id);
-   }
-   @Transactional
-   @Override
-   public void update(User changedUser) {
-      if (userDao.findUser(changedUser.getId()).getId() != changedUser.getId()) {
-         changedUser.setPassword(passwordEncoder.encode(changedUser.getPassword()));
-      }
-      userDao.update(changedUser);
-   }
+    private User getDefaultAdmin() {
+        return new User("admin", "adminsky", "admin@mail.ru", encode("123"), "admin", of(new Role("admin")));
+    }
 
-   @Transactional
-   @Override
-   public void addFirstAdmin() {
-      if (userDao.ifDBEmpty()) {
-         User admin = new User("admin","adminsky","admin@mail.ru");
-         admin.setPassword(passwordEncoder.encode("123"));
-         admin.setLogin("admin");
-         admin.setRoles(new Role("admin"));
-         userDao.add(admin);
+    private User getDefaultUser() {
+        return new User("user", "usersky", "user@mail.ru", encode("123"), "user", of(new Role("user")));
+    }
 
-         User user = new User("user","usersky","user@mail.ru");
-         user.setPassword(passwordEncoder.encode("123"));
-         user.setLogin("user");
-         user.setRoles(new Role("user"));
-         userDao.add(user);
-      }
-   }
+    private String encode(String str) {
+        return passwordEncoder.encode(str);
+    }
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        return userRepository.findByLogin(username)
+                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+    }
 }
