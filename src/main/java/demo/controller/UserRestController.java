@@ -45,6 +45,7 @@ public class UserRestController {
 
     @PutMapping("/usersEdit")
     public ResponseEntity<?> updateUser(@RequestBody User user) {
+        userService.update(user);
         return new ResponseEntity<>(HttpStatus.ACCEPTED);
     }
 
@@ -62,12 +63,10 @@ public class UserRestController {
 
     @GetMapping("/user")
     public ResponseEntity<User> getCurrentUser(Principal principal){
-        System.out.println(principal);
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
         User user = (User) authentication.getPrincipal();
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
-
 
     @PostConstruct
     public void init(){

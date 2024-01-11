@@ -10,11 +10,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import demo.repository.UserRepository;
-
 import java.util.List;
 import java.util.Optional;
 
 import static java.util.Set.of;
+
 @Service
 public class UserServiceImp implements UserService, UserDetailsService {
     private PasswordEncoder passwordEncoder;
@@ -53,32 +53,27 @@ public class UserServiceImp implements UserService, UserDetailsService {
     @Override
     public void update(User updatedUser) {
         Optional<User> user = userRepository.findById(updatedUser.getId());
-        if (user.isEmpty()) return;
-        System.out.println(user.get().getPassword().equals(updatedUser.getPassword()));
-        System.out.println(user.get().getPassword());
-        System.out.println(updatedUser.getPassword());
         if (!user.get().getPassword().equals(updatedUser.getPassword())) {
             updatedUser.setPassword(encode(updatedUser.getPassword()));
         }
         userRepository.save(updatedUser);
-
     }
 
     @Transactional
     @Override
     public void addFirstAdmin() {
         if (userRepository.countUsers().equals(0L)) {
-            userRepository.save(getDefaultUser());
-            userRepository.save(getDefaultAdmin());
+            save(getDefaultUser());
+            save(getDefaultAdmin());
         }
     }
 
     private User getDefaultAdmin() {
-        return new User("admin", "adminsky", "admin@mail.ru", encode("123"), "admin", of(new Role("admin")));
+        return new User("admin", "adminsky", "admin@mail.ru", "123", "admin", of(new Role("admin")));
     }
 
     private User getDefaultUser() {
-        return new User("user", "usersky", "user@mail.ru", encode("123"), "user", of(new Role("user")));
+        return new User("user", "usersky", "user@mail.ru", "123", "user", of(new Role("user")));
     }
 
     private String encode(String str) {

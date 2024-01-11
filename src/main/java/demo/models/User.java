@@ -108,10 +108,6 @@ public class User implements UserDetails {
       this.roles = roles;
    }
 
-   public void addRoles(Role role) {
-      this.roles.add(role);
-   }
-
    @Override
    public String toString() {
       return "User{" +
