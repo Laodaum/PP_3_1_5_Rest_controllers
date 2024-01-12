@@ -80,9 +80,15 @@ public class UserServiceImp implements UserService, UserDetailsService {
         return passwordEncoder.encode(str);
     }
 
+//    @Override
+//    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+//        return userRepository.findByLogin(username)
+//                .orElseThrow(() -> new UsernameNotFoundException("user not found"));
+//    }
+
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        return userRepository.findByLogin(username)
+        return userRepository.findByEmail(username)
                 .orElseThrow(() -> new UsernameNotFoundException("user not found"));
     }
 }
