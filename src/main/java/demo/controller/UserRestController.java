@@ -63,8 +63,11 @@ public class UserRestController {
 
     @GetMapping("/user")
     public ResponseEntity<User> getCurrentUser(Principal principal){
+        System.out.println("start @GetMapping(\"/user\")");
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        System.out.println("authentication =" + authentication);
         User user = (User) authentication.getPrincipal();
+        System.out.println("Principal =" + user);
         return new ResponseEntity<>(user, HttpStatus.OK);
     }
 
